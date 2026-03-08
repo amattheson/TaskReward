@@ -3,158 +3,187 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>The Grind Ledger</title>
+<title>The Barter Ledger</title>
 <style>
   body { 
-    background-color: #121212; 
-    color: #e0e0e0; 
-    font-family: system-ui, -apple-system, sans-serif; 
-    margin: 0; 
-    padding: 20px; 
-    touch-action: manipulation;
+    background-color: #121212; color: #e0e0e0; font-family: system-ui, -apple-system, sans-serif; 
+    margin: 0; padding: 20px; touch-action: manipulation;
   }
   h1 { color: #ffffff; font-weight: 300; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-  h2 { color: #aaaaaa; font-weight: 400; font-size: 1.2rem; margin-top: 30px; }
+  h2 { color: #aaaaaa; font-weight: 400; font-size: 1.2rem; margin-top: 30px; border-bottom: 1px dashed #333; padding-bottom: 5px; }
   
   .card { 
-    background: #1e1e1e; 
-    padding: 20px; 
-    border-radius: 12px; 
-    margin-bottom: 15px; 
+    background: #1e1e1e; padding: 15px; border-radius: 8px; margin-bottom: 15px; 
     border: 1px solid #2a2a2a; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   }
   
-  .flex-between { display: flex; justify-content: space-between; align-items: center; }
-  .task-name { font-size: 1.1rem; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .task-name { font-size: 1rem; color: #ccc; }
+  .balance-display { font-size: 1.5rem; font-weight: bold; color: #fff; }
   
   .btn { 
-    background: #2a2a2a; 
-    color: #fff; 
-    border: 1px solid #444; 
-    padding: 12px 20px; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    font-size: 1rem; 
-    font-weight: bold;
-    transition: background 0.2s;
+    background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 10px 15px; 
+    border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold;
+    flex: 1; margin: 0 5px; transition: background 0.2s;
   }
   .btn:active { background: #555; }
-  .btn-green { background: #1b4d2e; border-color: #2d7a47; }
-  .btn-green:active { background: #2d7a47; }
+  .btn-green { background: #1b4d2e; border-color: #2d7a47; color: #81c784; }
+  .btn-green:active { background: #2d7a47; color: #fff; }
+  .btn-red { background: #4a1919; border-color: #7a2d2d; color: #e57373; }
+  .btn-red:active { background: #7a2d2d; color: #fff; }
 
   .progress-bar { 
-    background: #000; 
-    border-radius: 6px; 
-    height: 24px; 
-    width: 100%; 
-    margin-top: 15px; 
-    overflow: hidden; 
-    border: 1px solid #333;
+    background: #000; border-radius: 4px; height: 12px; width: 100%; margin: 15px 0; overflow: hidden; border: 1px solid #333;
   }
-  .progress-fill { 
-    background: #4caf50; 
-    height: 100%; 
-    width: 0%; 
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-  }
+  .progress-fill { background: #4caf50; height: 100%; width: 0%; transition: width 0.4s ease; }
   
-  .reward-unlocked { 
-    color: #4caf50; 
-    display: none; 
-    margin-top: 15px; 
-    font-weight: bold; 
-    text-align: center;
-    padding: 10px;
-    background: rgba(76, 175, 80, 0.1);
-    border-radius: 6px;
+  .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+  input { 
+    background: #111; border: 1px solid #333; color: #fff; padding: 10px; 
+    border-radius: 6px; width: 100%; font-size: 1rem;
   }
 </style>
 </head>
 <body>
 
-  <h1>The Ledger</h1>
+  <h1>The Barter Ledger</h1>
 
-  <div class="card" style="border-color: #4caf50;">
-    <h2 style="margin-top: 0; color: #fff;">Weekend Fund</h2>
-    <div style="font-size: 2.5rem; font-weight: bold; color: #4caf50;">
-      $<span id="weekend-fund">0</span>
-    </div>
-  </div>
-
-  <h2>Weekly Operations</h2>
+  <h2>Capital Liquidation</h2>
   <div class="card">
     <div class="flex-between">
-      <span class="task-name">Survive Tuesday to Friday 7:00-5:30</span>
-      <button class="btn" onclick="addFund(20)">+$20</button>
-    </div>
-  </div>
-  <div class="card">
-    <div class="flex-between">
-      <span class="task-name">Friday Logistics with Kaldur & Skarlette</span>
-      <button class="btn" onclick="addFund(15)">+$15</button>
-    </div>
-  </div>
-
-  <h2>Long-Term Accumulator</h2>
-  <div class="card">
-    <div class="flex-between">
-      <span class="task-name">Save for New Electronics Gear</span>
-      <span style="color: #888;">$<span id="goal-current">0</span> / $200</span>
+      <span class="task-name">Save $300 to unlock $100 spending</span>
+      <span style="color: #888;">$<span id="savings-current">0</span> / $300</span>
     </div>
     
     <div class="progress-bar">
-      <div class="progress-fill" id="goal-bar"></div>
+      <div class="progress-fill" id="savings-bar"></div>
     </div>
     
-    <button class="btn btn-green" style="width: 100%; margin-top: 15px;" onclick="pumpAccumulator(25)">Inject $25</button>
-    
-    <div id="goal-reward" class="reward-unlocked">
-      Target hit. Valve opened. $100 spending unlocked.
+    <div class="flex-between" style="margin: 0 -5px;">
+      <button class="btn btn-green" onclick="addSavings(25)">+ Inject $25</button>
+      <button class="btn btn-red" id="claim-savings-btn" style="display:none;" onclick="claimSavings()">Claim $100 & Reset</button>
+    </div>
+    <div style="margin-top: 10px; text-align: center; color: #81c784; font-size: 0.9rem;">
+      Available Fun Money: $<span id="liquid-cash">0</span>
     </div>
   </div>
 
+  <h2>Active Contracts</h2>
+  <div id="contracts-container"></div>
+
+  <h2>Forge New Contract</h2>
+  <div class="card" style="border-color: #444;">
+    <div class="input-group">
+      <input type="text" id="new-task" placeholder="The Chore (e.g., Mow Lawn)">
+      <input type="text" id="new-reward" placeholder="The Reward (e.g., 1 Hour Gaming)">
+    </div>
+    <div class="input-group">
+      <input type="number" id="new-earn" placeholder="Earn amount" value="1" style="width: 50%;">
+      <input type="number" id="new-cost" placeholder="Claim cost" value="1" style="width: 50%;">
+    </div>
+    <button class="btn btn-green" style="width: calc(100% - 10px); margin: 0;" onclick="createContract()">Lock It In</button>
+  </div>
+
 <script>
-  // Initialize LocalStorage constraints
-  let weekendFund = parseInt(localStorage.getItem('vantaWeekend')) || 0;
-  let goalCurrent = parseInt(localStorage.getItem('vantaGoal')) || 0;
-  const goalTarget = 200;
+  // --- Financial Mechanics ---
+  let savedCapital = parseInt(localStorage.getItem('vantaSaved')) || 0;
+  let liquidCash = parseInt(localStorage.getItem('vantaLiquid')) || 0;
+  const savingTarget = 300;
 
-  // The engine that renders the truth
-  function updateUI() {
-    document.getElementById('weekend-fund').innerText = weekendFund;
-    document.getElementById('goal-current').innerText = goalCurrent;
+  function updateFinancials() {
+    document.getElementById('savings-current').innerText = savedCapital;
+    document.getElementById('liquid-cash').innerText = liquidCash;
+    let percent = Math.min((savedCapital / savingTarget) * 100, 100);
+    document.getElementById('savings-bar').style.width = percent + '%';
     
-    // Calculate hydraulic pressure for the progress bar
-    let percent = (goalCurrent / goalTarget) * 100;
-    document.getElementById('goal-bar').style.width = Math.min(percent, 100) + '%';
-    
-    // Trip the valve if target is reached
-    if (goalCurrent >= goalTarget) {
-      document.getElementById('goal-reward').style.display = 'block';
+    if (savedCapital >= savingTarget) {
+      document.getElementById('claim-savings-btn').style.display = 'block';
     } else {
-      document.getElementById('goal-reward').style.display = 'none';
+      document.getElementById('claim-savings-btn').style.display = 'none';
     }
   }
 
-  // Add standard operational funds
-  function addFund(amount) {
-    weekendFund += amount;
-    localStorage.setItem('vantaWeekend', weekendFund);
-    updateUI();
+  function addSavings(amount) {
+    savedCapital += amount;
+    localStorage.setItem('vantaSaved', savedCapital);
+    updateFinancials();
   }
 
-  // Pump pressure into the long-term goal
-  function pumpAccumulator(amount) {
-    if (goalCurrent < goalTarget) {
-      goalCurrent += amount;
-      localStorage.setItem('vantaGoal', goalCurrent);
-      updateUI();
+  function claimSavings() {
+    if (savedCapital >= savingTarget) {
+      savedCapital -= savingTarget;
+      liquidCash += 100; // The defined reward
+      localStorage.setItem('vantaSaved', savedCapital);
+      localStorage.setItem('vantaLiquid', liquidCash);
+      updateFinancials();
     }
   }
 
-  // Initial render
-  updateUI();
+  // --- Barter Mechanics ---
+  let defaultContracts = [
+    { id: 'c1', task: 'Complete Workout', reward: 'Massage', balance: 0, earnRate: 1, costRate: 1 },
+    { id: 'c2', task: 'Morning Tea & Protein Lunch', reward: 'Liquor (oz)', balance: 0, earnRate: 4, costRate: 1 }
+  ];
+
+  let contracts = JSON.parse(localStorage.getItem('vantaContracts')) || defaultContracts;
+
+  function saveContracts() {
+    localStorage.setItem('vantaContracts', JSON.stringify(contracts));
+    renderContracts();
+  }
+
+  function renderContracts() {
+    const container = document.getElementById('contracts-container');
+    container.innerHTML = '';
+
+    contracts.forEach((contract, index) => {
+      container.innerHTML += `
+        <div class="card">
+          <div style="margin-bottom: 12px; color: #888; font-size: 0.85rem; text-align: center;">
+            ${contract.task} = ${contract.earnRate} ${contract.reward}
+          </div>
+          <div class="flex-between">
+            <button class="btn btn-green" onclick="modifyBalance(${index}, ${contract.earnRate})">Did Work (+${contract.earnRate})</button>
+            <span class="balance-display">${contract.balance}</span>
+            <button class="btn btn-red" onclick="modifyBalance(${index}, -${contract.costRate})">Claim (-${contract.costRate})</button>
+          </div>
+          <div style="text-align: center; margin-top: 5px; color: #555; font-size: 0.8rem;">
+            Inventory: ${contract.reward}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function modifyBalance(index, amount) {
+    // Prevents negative balances
+    if (contracts[index].balance + amount >= 0) {
+      contracts[index].balance += amount;
+      saveContracts();
+    }
+  }
+
+  function createContract() {
+    let task = document.getElementById('new-task').value;
+    let reward = document.getElementById('new-reward').value;
+    let earn = parseInt(document.getElementById('new-earn').value) || 1;
+    let cost = parseInt(document.getElementById('new-cost').value) || 1;
+
+    if (task && reward) {
+      contracts.push({ id: Date.now().toString(), task: task, reward: reward, balance: 0, earnRate: earn, costRate: cost });
+      saveContracts();
+      
+      // Clear inputs
+      document.getElementById('new-task').value = '';
+      document.getElementById('new-reward').value = '';
+      document.getElementById('new-earn').value = '1';
+      document.getElementById('new-cost').value = '1';
+    }
+  }
+
+  // Boot up the engine
+  updateFinancials();
+  renderContracts();
 </script>
 </body>
 </html>
