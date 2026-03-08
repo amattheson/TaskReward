@@ -78,10 +78,13 @@
     
     <button class="btn btn-red" id="claim-savings-btn" style="display:none; width: 100%; margin: 15px 0 0 0;" onclick="claimSavings()">Claim $100 & Reset</button>
     
-    <div style="margin-top: 15px; text-align: center; color: #81c784; font-size: 0.95rem; font-weight: bold;">
-      Available Fun Money: $<span id="liquid-cash">0</span>
+    <div class="flex-between" style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+      <div style="color: #81c784; font-size: 1rem; font-weight: bold;">
+        Fun Money: $<span id="liquid-cash">0</span>
+      </div>
+      <button class="btn btn-red" style="flex: 0 1 auto; padding: 6px 12px; font-size: 0.8rem;" onclick="spendLiquid(10)">Spend $10</button>
     </div>
-    <div style="margin-top: 5px; text-align: center; color: #aaaaaa; font-size: 0.85rem;">
+    <div style="margin-top: 8px; text-align: left; color: #aaaaaa; font-size: 0.85rem;">
       Lifetime Capital Saved: $<span id="lifetime-saved">0</span>
     </div>
   </div>
@@ -104,4 +107,151 @@
 
 <script>
   // --- Financial Mechanics ---
-  let savedCapital = parseInt(localStorage.getItem('vantaSaved')) || 0
+  let savedCapital = parseInt(localStorage.getItem('vantaSaved')) || 0;
+  let liquidCash = parseInt(localStorage.getItem('vantaLiquid')) || 0;
+  let lifetimeSaved = parseInt(localStorage.getItem('vantaLifetime')) || 0;
+  const savingTarget = 300;
+
+  function updateFinancials() {
+    document.getElementById('savings-current').innerText = savedCapital;
+    document.getElementById('liquid-cash').innerText = liquidCash;
+    document.getElementById('lifetime-saved').innerText = lifetimeSaved;
+    let percent = Math.min((Math.max(savedCapital, 0) / savingTarget) * 100, 100);
+    document.getElementById('savings-bar').style.width = percent + '%';
+    
+    if (savedCapital >= savingTarget) {
+      document.getElementById('claim-savings-btn').style.display = 'block';
+    } else {
+      document.getElementById('claim-savings-btn').style.display = 'none';
+    }
+  }
+
+  function addSavings(amount) {
+    savedCapital += amount;
+    lifetimeSaved += amount;
+    localStorage.setItem('vantaSaved', savedCapital);
+    localStorage.setItem('vantaLifetime', lifetimeSaved);
+    updateFinancials();
+  }
+
+  function injectCustomSavings() {
+    let inputField = document.getElementById('custom-savings');
+    let amount = parseInt(inputField.value);
+    if (!isNaN(amount)) {
+      addSavings(amount);
+      inputField.value = ''; 
+    }
+  }
+
+  function claimSavings() {
+    if (savedCapital >= savingTarget) {
+      savedCapital -= savingTarget;
+      liquidCash += 100; 
+      localStorage.setItem('vantaSaved', savedCapital);
+      localStorage.setItem('vantaLiquid', liquidCash);
+      updateFinancials();
+    }
+  }
+
+  function spendLiquid(amount) {
+    if (liquidCash >= amount) {
+      liquidCash -= amount;
+      localStorage.setItem('vantaLiquid', liquidCash);
+      updateFinancials();
+    }
+  }
+
+  // --- Barter Mechanics with Armor ---
+  let defaultContracts = [
+    { id: 'c1', task: 'Complete Workout', reward: 'Massage', balance: 0, earnRate: 1, costRate: 1 },
+    { id: 'c2', task: 'Morning Tea & Protein Lunch', reward: 'Liquor (oz)', balance: 0, earnRate: 4, costRate: 1 }
+  ];
+
+  let contracts = defaultContracts;
+  
+  try {
+    let storedData = localStorage.getItem('vantaContracts');
+    if (storedData) {
+      let parsed = JSON.parse(storedData);
+      if (Array.isArray(parsed)) {
+        contracts = parsed;
+      }
+    }
+  } catch (e) {
+    console.error("Corrupted memory detected. Defaulting to clean slate.");
+  }
+
+  function saveContracts() {
+    localStorage.setItem('vantaContracts', JSON.stringify(contracts));
+    renderContracts();
+  }
+
+  function renderContracts() {
+    const container = document.getElementById('contracts-container');
+    container.innerHTML = '';
+
+    contracts.forEach((contract, index) => {
+      // Fallbacks in case the stored array has missing values
+      let earn = contract.earnRate || 1;
+      let cost = contract.costRate || 1;
+      let bal = contract.balance || 0;
+      let taskName = contract.task || "Unknown Task";
+      let rewardName = contract.reward || "Reward";
+
+      container.innerHTML += `
+        <div class="card">
+          <div class="flex-between" style="border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 12px;">
+            <span style="color: #aaa; font-size: 0.9rem;">${taskName} = ${earn} ${rewardName}</span>
+            <button class="btn-scrap" onclick="deleteContract(${index})">Scrap</button>
+          </div>
+          <div class="flex-between">
+            <button class="btn btn-green" onclick="modifyBalance(${index}, ${earn})">Completed Task</button>
+            <span class="balance-display">${bal}</span>
+            <button class="btn btn-red" onclick="modifyBalance(${index}, -${cost})">Claim Reward</button>
+          </div>
+          <div style="text-align: center; margin-top: 8px; color: #666; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+            Inventory: ${rewardName}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function modifyBalance(index, amount) {
+    let currentBal = contracts[index].balance || 0;
+    if (currentBal + amount >= 0) {
+      contracts[index].balance = currentBal + amount;
+      saveContracts();
+    }
+  }
+
+  function deleteContract(index) {
+    if (confirm("Are you sure you want to scrap this contract permanently?")) {
+      contracts.splice(index, 1);
+      saveContracts();
+    }
+  }
+
+  function createContract() {
+    let task = document.getElementById('new-task').value;
+    let reward = document.getElementById('new-reward').value;
+    let earn = parseInt(document.getElementById('new-earn').value) || 1;
+    let cost = parseInt(document.getElementById('new-cost').value) || 1;
+
+    if (task && reward) {
+      contracts.push({ id: Date.now().toString(), task: task, reward: reward, balance: 0, earnRate: earn, costRate: cost });
+      saveContracts();
+      
+      document.getElementById('new-task').value = '';
+      document.getElementById('new-reward').value = '';
+      document.getElementById('new-earn').value = '1';
+      document.getElementById('new-cost').value = '1';
+    }
+  }
+
+  // Boot up the engine
+  updateFinancials();
+  renderContracts();
+</script>
+</body>
+</html>
