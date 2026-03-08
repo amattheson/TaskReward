@@ -9,48 +9,63 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>
   body { 
-    background-color: #121212; color: #e0e0e0; font-family: system-ui, -apple-system, sans-serif; 
+    background-color: #09090e; color: #e0e0f0; font-family: system-ui, -apple-system, sans-serif; 
     margin: 0; padding: 20px; touch-action: manipulation;
   }
-  h1 { color: #ffffff; font-weight: 300; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-  h2 { color: #aaaaaa; font-weight: 400; font-size: 1.2rem; margin-top: 30px; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+  h1 { 
+    color: #ffffff; font-weight: 300; letter-spacing: 2px; border-bottom: 1px solid #2d244a; 
+    padding-bottom: 10px; text-shadow: 0 0 12px rgba(188, 19, 254, 0.6); text-transform: uppercase;
+  }
+  h2 { color: #bba2ff; font-weight: 400; font-size: 1.2rem; margin-top: 30px; border-bottom: 1px dashed #2d244a; padding-bottom: 5px; text-shadow: 0 0 8px rgba(187, 162, 255, 0.3); }
   
   .card { 
-    background: #1e1e1e; padding: 15px; border-radius: 8px; margin-bottom: 15px; 
-    border: 1px solid #2a2a2a; position: relative;
+    background: #11111a; padding: 15px; border-radius: 8px; margin-bottom: 15px; 
+    border: 1px solid #2a2244; position: relative;
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.05);
   }
   
   .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .task-name { font-size: 1rem; color: #ccc; }
-  .balance-display { font-size: 1.5rem; font-weight: bold; color: #fff; min-width: 30px; text-align: center; }
+  .task-name { font-size: 1rem; color: #d5d6e2; }
+  .balance-display { font-size: 1.5rem; font-weight: bold; color: #fff; min-width: 30px; text-align: center; text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
   
   .btn { 
-    background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 10px 15px; 
+    background: #1a1a2e; color: #fff; border: 1px solid #444; padding: 10px 15px; 
     border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold;
-    flex: 1; margin: 0 5px; transition: background 0.2s; text-align: center;
+    flex: 1; margin: 0 5px; transition: all 0.2s ease; text-align: center;
   }
-  .btn:active { background: #555; }
-  .btn-green { background: #1b4d2e; border-color: #2d7a47; color: #81c784; }
-  .btn-green:active { background: #2d7a47; color: #fff; }
-  .btn-red { background: #4a1919; border-color: #7a2d2d; color: #e57373; }
-  .btn-red:active { background: #7a2d2d; color: #fff; }
   
+  /* The "Earn" Buttons (Neon Blue) */
+  .btn-green { background: rgba(0, 136, 255, 0.1); border-color: #0088ff; color: #80c4ff; }
+  .btn-green:active { background: #0088ff; color: #fff; box-shadow: 0 0 15px #0088ff; }
+  
+  /* The "Claim/Spend" Buttons (Neon Magenta) */
+  .btn-red { background: rgba(255, 0, 128, 0.1); border-color: #ff0080; color: #ff80c0; }
+  .btn-red:active { background: #ff0080; color: #fff; box-shadow: 0 0 15px #ff0080; }
+  
+  /* The Scrap Button */
   .btn-scrap {
-    background: transparent; border: 1px solid #4a1919; color: #e57373; padding: 4px 10px; 
-    border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: background 0.2s;
+    background: transparent; border: 1px solid rgba(255, 0, 128, 0.5); color: #ff80c0; padding: 4px 10px; 
+    border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease;
   }
-  .btn-scrap:hover, .btn-scrap:active { background: #4a1919; color: #fff; }
+  .btn-scrap:hover, .btn-scrap:active { background: rgba(255, 0, 128, 0.2); box-shadow: 0 0 8px rgba(255, 0, 128, 0.6); color: #fff; }
 
+  /* The Accumulator Bar */
   .progress-bar { 
-    background: #000; border-radius: 4px; height: 12px; width: 100%; margin: 15px 0; overflow: hidden; border: 1px solid #333;
+    background: #09090e; border-radius: 4px; height: 12px; width: 100%; margin: 15px 0; 
+    overflow: hidden; border: 1px solid #2d244a; box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
   }
-  .progress-fill { background: #4caf50; height: 100%; width: 0%; transition: width 0.4s ease; }
+  .progress-fill { 
+    background: linear-gradient(90deg, #0088ff, #ff0080); 
+    height: 100%; width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    box-shadow: 0 0 12px rgba(255, 0, 128, 0.6);
+  }
   
   .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
   input { 
-    background: #111; border: 1px solid #333; color: #fff; padding: 10px; 
-    border-radius: 6px; width: 100%; font-size: 1rem; box-sizing: border-box;
+    background: #09090e; border: 1px solid #2d244a; color: #e0e0f0; padding: 10px; 
+    border-radius: 6px; width: 100%; font-size: 1rem; box-sizing: border-box; transition: all 0.2s;
   }
+  input:focus { outline: none; border-color: #0088ff; box-shadow: 0 0 8px rgba(0, 136, 255, 0.4); }
 </style>
 </head>
 <body>
@@ -61,7 +76,7 @@
   <div class="card">
     <div class="flex-between">
       <span class="task-name">Save $300 to unlock $100 spending</span>
-      <span style="color: #888;">$<span id="savings-current">0</span> / $300</span>
+      <span style="color: #7ab4ff; font-weight: bold; text-shadow: 0 0 5px rgba(0, 136, 255, 0.4);">$<span id="savings-current">0</span> <span style="color: #555;">/ $300</span></span>
     </div>
     
     <div class="progress-bar">
@@ -81,13 +96,13 @@
     
     <button class="btn btn-red" id="claim-savings-btn" style="display:none; width: 100%; margin: 15px 0 0 0;" onclick="claimSavings()">Claim $100 & Reset</button>
     
-    <div class="flex-between" style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
-      <div style="color: #81c784; font-size: 1rem; font-weight: bold;">
+    <div class="flex-between" style="margin-top: 20px; border-top: 1px solid #2d244a; padding-top: 15px;">
+      <div style="color: #00e5ff; font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);">
         Fun Money: $<span id="liquid-cash">0</span>
       </div>
       <button class="btn btn-red" style="flex: 0 1 auto; padding: 6px 12px; font-size: 0.8rem;" onclick="spendLiquid(10)">Spend $10</button>
     </div>
-    <div style="margin-top: 8px; text-align: left; color: #aaaaaa; font-size: 0.85rem;">
+    <div style="margin-top: 8px; text-align: left; color: #bba2ff; font-size: 0.85rem; text-shadow: 0 0 5px rgba(187, 162, 255, 0.2);">
       Lifetime Capital Saved: $<span id="lifetime-saved">0</span>
     </div>
   </div>
@@ -96,7 +111,7 @@
   <div id="contracts-container"></div>
 
   <h2>Forge New Contract</h2>
-  <div class="card" style="border-color: #444;">
+  <div class="card" style="border-color: #2d244a;">
     <div class="input-group">
       <input type="text" id="new-task" placeholder="The Chore (e.g., Mow Lawn)">
       <input type="text" id="new-reward" placeholder="The Reward (e.g., 1 Hour Gaming)">
@@ -194,7 +209,6 @@
     container.innerHTML = '';
 
     contracts.forEach((contract, index) => {
-      // Fallbacks in case the stored array has missing values
       let earn = contract.earnRate || 1;
       let cost = contract.costRate || 1;
       let bal = contract.balance || 0;
@@ -203,8 +217,8 @@
 
       container.innerHTML += `
         <div class="card">
-          <div class="flex-between" style="border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 12px;">
-            <span style="color: #aaa; font-size: 0.9rem;">${taskName} = ${earn} ${rewardName}</span>
+          <div class="flex-between" style="border-bottom: 1px solid #2d244a; padding-bottom: 8px; margin-bottom: 12px;">
+            <span style="color: #bba2ff; font-size: 0.9rem;">${taskName} <span style="color: #555;">=</span> ${earn} ${rewardName}</span>
             <button class="btn-scrap" onclick="deleteContract(${index})">Scrap</button>
           </div>
           <div class="flex-between">
@@ -212,7 +226,7 @@
             <span class="balance-display">${bal}</span>
             <button class="btn btn-red" onclick="modifyBalance(${index}, -${cost})">Claim Reward</button>
           </div>
-          <div style="text-align: center; margin-top: 8px; color: #666; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+          <div style="text-align: center; margin-top: 8px; color: #7ab4ff; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
             Inventory: ${rewardName}
           </div>
         </div>
