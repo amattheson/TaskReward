@@ -17,7 +17,7 @@
     margin: 0; padding: 20px; touch-action: manipulation;
   }
   h1 { 
-    font-family: 'Cinzel', serif; /* The new aftermarket part */
+    font-family: 'Cinzel', serif;
     color: #ffffff; font-weight: 700; letter-spacing: 2px; border-bottom: 1px solid #2d244a; 
     padding-bottom: 10px; text-shadow: 0 0 12px rgba(188, 19, 254, 0.6); text-transform: uppercase;
   }
@@ -39,22 +39,18 @@
     flex: 1; margin: 0 5px; transition: all 0.2s ease; text-align: center;
   }
   
-  /* The "Earn" Buttons (Neon Blue) */
   .btn-green { background: rgba(0, 136, 255, 0.1); border-color: #0088ff; color: #80c4ff; }
   .btn-green:active { background: #0088ff; color: #fff; box-shadow: 0 0 15px #0088ff; }
   
-  /* The "Claim/Spend" Buttons (Neon Magenta) */
   .btn-red { background: rgba(255, 0, 128, 0.1); border-color: #ff0080; color: #ff80c0; }
   .btn-red:active { background: #ff0080; color: #fff; box-shadow: 0 0 15px #ff0080; }
   
-  /* The Scrap Button */
   .btn-scrap {
     background: transparent; border: 1px solid rgba(255, 0, 128, 0.5); color: #ff80c0; padding: 4px 10px; 
     border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease;
   }
   .btn-scrap:hover, .btn-scrap:active { background: rgba(255, 0, 128, 0.2); box-shadow: 0 0 8px rgba(255, 0, 128, 0.6); color: #fff; }
 
-  /* The Accumulator Bar */
   .progress-bar { 
     background: #09090e; border-radius: 4px; height: 12px; width: 100%; margin: 15px 0; 
     overflow: hidden; border: 1px solid #2d244a; box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
@@ -129,7 +125,6 @@
   </div>
 
 <script>
-  // --- Financial Mechanics ---
   let savedCapital = parseInt(localStorage.getItem('vantaSaved')) || 0;
   let liquidCash = parseInt(localStorage.getItem('vantaLiquid')) || 0;
   let lifetimeSaved = parseInt(localStorage.getItem('vantaLifetime')) || 0;
@@ -184,7 +179,6 @@
     }
   }
 
-  // --- Barter Mechanics with Armor ---
   let defaultContracts = [
     { id: 'c1', task: 'Complete Workout', reward: 'Massage', balance: 0, earnRate: 1, costRate: 1 },
     { id: 'c2', task: 'Morning Tea & Protein Lunch', reward: 'Liquor (oz)', balance: 0, earnRate: 4, costRate: 1 }
@@ -271,7 +265,6 @@
     }
   }
 
-  // Boot up the engine
   updateFinancials();
   renderContracts();
 </script>
