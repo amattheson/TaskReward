@@ -14,23 +14,29 @@
   
   .card { 
     background: #1e1e1e; padding: 15px; border-radius: 8px; margin-bottom: 15px; 
-    border: 1px solid #2a2a2a; 
+    border: 1px solid #2a2a2a; position: relative;
   }
   
   .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .task-name { font-size: 1rem; color: #ccc; }
-  .balance-display { font-size: 1.5rem; font-weight: bold; color: #fff; }
+  .balance-display { font-size: 1.5rem; font-weight: bold; color: #fff; min-width: 30px; text-align: center; }
   
   .btn { 
     background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 10px 15px; 
     border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold;
-    flex: 1; margin: 0 5px; transition: background 0.2s;
+    flex: 1; margin: 0 5px; transition: background 0.2s; text-align: center;
   }
   .btn:active { background: #555; }
   .btn-green { background: #1b4d2e; border-color: #2d7a47; color: #81c784; }
   .btn-green:active { background: #2d7a47; color: #fff; }
   .btn-red { background: #4a1919; border-color: #7a2d2d; color: #e57373; }
   .btn-red:active { background: #7a2d2d; color: #fff; }
+  
+  .btn-scrap {
+    background: transparent; border: 1px solid #4a1919; color: #e57373; padding: 4px 10px; 
+    border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-scrap:hover, .btn-scrap:active { background: #4a1919; color: #fff; }
 
   .progress-bar { 
     background: #000; border-radius: 4px; height: 12px; width: 100%; margin: 15px 0; overflow: hidden; border: 1px solid #333;
@@ -40,7 +46,7 @@
   .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
   input { 
     background: #111; border: 1px solid #333; color: #fff; padding: 10px; 
-    border-radius: 6px; width: 100%; font-size: 1rem;
+    border-radius: 6px; width: 100%; font-size: 1rem; box-sizing: border-box;
   }
 </style>
 </head>
@@ -60,10 +66,19 @@
     </div>
     
     <div class="flex-between" style="margin: 0 -5px;">
-      <button class="btn btn-green" onclick="addSavings(25)">+ Inject $25</button>
-      <button class="btn btn-red" id="claim-savings-btn" style="display:none;" onclick="claimSavings()">Claim $100 & Reset</button>
+      <button class="btn btn-green" onclick="addSavings(5)">+$5</button>
+      <button class="btn btn-green" onclick="addSavings(10)">+$10</button>
+      <button class="btn btn-green" onclick="addSavings(20)">+$20</button>
     </div>
-    <div style="margin-top: 10px; text-align: center; color: #81c784; font-size: 0.9rem;">
+    
+    <div class="input-group" style="margin-top: 10px;">
+      <input type="number" id="custom-savings" placeholder="Custom Amount">
+      <button class="btn btn-green" style="margin: 0;" onclick="injectCustomSavings()">Inject</button>
+    </div>
+    
+    <button class="btn btn-red" id="claim-savings-btn" style="display:none; width: 100%; margin: 15px 0 0 0;" onclick="claimSavings()">Claim $100 & Reset</button>
+    
+    <div style="margin-top: 15px; text-align: center; color: #81c784; font-size: 0.95rem; font-weight: bold;">
       Available Fun Money: $<span id="liquid-cash">0</span>
     </div>
   </div>
@@ -81,7 +96,7 @@
       <input type="number" id="new-earn" placeholder="Earn amount" value="1" style="width: 50%;">
       <input type="number" id="new-cost" placeholder="Claim cost" value="1" style="width: 50%;">
     </div>
-    <button class="btn btn-green" style="width: calc(100% - 10px); margin: 0;" onclick="createContract()">Lock It In</button>
+    <button class="btn btn-green" style="width: 100%; margin: 0;" onclick="createContract()">Lock It In</button>
   </div>
 
 <script>
@@ -93,7 +108,7 @@
   function updateFinancials() {
     document.getElementById('savings-current').innerText = savedCapital;
     document.getElementById('liquid-cash').innerText = liquidCash;
-    let percent = Math.min((savedCapital / savingTarget) * 100, 100);
+    let percent = Math.min((Math.max(savedCapital, 0) / savingTarget) * 100, 100);
     document.getElementById('savings-bar').style.width = percent + '%';
     
     if (savedCapital >= savingTarget) {
@@ -109,10 +124,19 @@
     updateFinancials();
   }
 
+  function injectCustomSavings() {
+    let inputField = document.getElementById('custom-savings');
+    let amount = parseInt(inputField.value);
+    if (!isNaN(amount)) {
+      addSavings(amount);
+      inputField.value = ''; 
+    }
+  }
+
   function claimSavings() {
     if (savedCapital >= savingTarget) {
       savedCapital -= savingTarget;
-      liquidCash += 100; // The defined reward
+      liquidCash += 100; 
       localStorage.setItem('vantaSaved', savedCapital);
       localStorage.setItem('vantaLiquid', liquidCash);
       updateFinancials();
@@ -139,15 +163,16 @@
     contracts.forEach((contract, index) => {
       container.innerHTML += `
         <div class="card">
-          <div style="margin-bottom: 12px; color: #888; font-size: 0.85rem; text-align: center;">
-            ${contract.task} = ${contract.earnRate} ${contract.reward}
+          <div class="flex-between" style="border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 12px;">
+            <span style="color: #aaa; font-size: 0.9rem;">${contract.task} = ${contract.earnRate} ${contract.reward}</span>
+            <button class="btn-scrap" onclick="deleteContract(${index})">Scrap</button>
           </div>
           <div class="flex-between">
-            <button class="btn btn-green" onclick="modifyBalance(${index}, ${contract.earnRate})">Did Work (+${contract.earnRate})</button>
+            <button class="btn btn-green" onclick="modifyBalance(${index}, ${contract.earnRate})">Completed Task</button>
             <span class="balance-display">${contract.balance}</span>
-            <button class="btn btn-red" onclick="modifyBalance(${index}, -${contract.costRate})">Claim (-${contract.costRate})</button>
+            <button class="btn btn-red" onclick="modifyBalance(${index}, -${contract.costRate})">Claim Reward</button>
           </div>
-          <div style="text-align: center; margin-top: 5px; color: #555; font-size: 0.8rem;">
+          <div style="text-align: center; margin-top: 8px; color: #666; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
             Inventory: ${contract.reward}
           </div>
         </div>
@@ -156,9 +181,15 @@
   }
 
   function modifyBalance(index, amount) {
-    // Prevents negative balances
     if (contracts[index].balance + amount >= 0) {
       contracts[index].balance += amount;
+      saveContracts();
+    }
+  }
+
+  function deleteContract(index) {
+    if (confirm("Are you sure you want to scrap this contract permanently?")) {
+      contracts.splice(index, 1);
       saveContracts();
     }
   }
@@ -173,7 +204,6 @@
       contracts.push({ id: Date.now().toString(), task: task, reward: reward, balance: 0, earnRate: earn, costRate: cost });
       saveContracts();
       
-      // Clear inputs
       document.getElementById('new-task').value = '';
       document.getElementById('new-reward').value = '';
       document.getElementById('new-earn').value = '1';
