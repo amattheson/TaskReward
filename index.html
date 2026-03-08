@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>The Barter Ledger</title>
+<title>The Grind & Barter Ledger</title>
 <style>
   body { 
     background-color: #121212; color: #e0e0e0; font-family: system-ui, -apple-system, sans-serif; 
@@ -48,11 +48,17 @@
     background: #111; border: 1px solid #333; color: #fff; padding: 10px; 
     border-radius: 6px; width: 100%; font-size: 1rem; box-sizing: border-box;
   }
+
+  .nuke-btn {
+    background: transparent; border: 1px solid #333; color: #555; padding: 10px; 
+    border-radius: 6px; width: 100%; font-size: 0.8rem; cursor: pointer; margin-top: 40px;
+  }
+  .nuke-btn:active { background: #333; color: #e57373; }
 </style>
 </head>
 <body>
 
-  <h1>The Barter Ledger</h1>
+  <h1>The Master Ledger</h1>
 
   <h2>Capital Liquidation</h2>
   <div class="card">
@@ -76,15 +82,4 @@
       <button class="btn btn-green" style="margin: 0;" onclick="injectCustomSavings()">Inject</button>
     </div>
     
-    <button class="btn btn-red" id="claim-savings-btn" style="display:none; width: 100%; margin: 15px 0 0 0;" onclick="claimSavings()">Reset Accumulator</button>
-    
-    <div style="margin-top: 15px; text-align: center; color: #aaaaaa; font-size: 0.95rem; font-weight: bold; border-top: 1px solid #333; padding-top: 10px;">
-      Lifetime Capital Saved: $<span id="lifetime-saved">0</span>
-    </div>
-  </div>
-
-  <h2>Active Contracts</h2>
-  <div id="contracts-container"></div>
-
-  <h2>Forge New Contract</h2>
-  <div class="card" style="border
+    <button
